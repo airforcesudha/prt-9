@@ -25,8 +25,8 @@ const connectAndserver = async () => {
 connectAndserver();
 
 app.post("/register/", async (request, response) => {
-  const { userName, name, password, gender, location } = request.body;
-  const usernameAva = `select * from user where username = '${userName}';`;
+  const { username, name, password, gender, location } = request.body;
+  const usernameAva = `select * from user where username = '${username}';`;
   const result1 = await db.get(usernameAva);
   if (result1 !== undefined) {
     response.status(400);
@@ -37,12 +37,12 @@ app.post("/register/", async (request, response) => {
       response.status(400);
       response.send("Password is too short");
     } else {
-      const Mpassword = await bcrypt.hash(password, 10);
-      const rQuery = `insert into
+      const changePassword = await bcrypt.hash(password, 10);
+      const iQuery = `insert into
                             user(username,name,password,gender,location)
-                        values
-                            ('${userName}','${name}','${Mpassword}','${gender}','${location}';`;
-      await db.run(rQuery);
+                        values (
+                            '${username}','${name}','${changePassword}','${gender}','${location}';`;
+      await db.run(iQuery);
       response.status(200);
       response.send("User created successfully");
     }
@@ -50,8 +50,8 @@ app.post("/register/", async (request, response) => {
 });
 
 app.post("/login/", async (request, response) => {
-  const { userName, password } = request.body;
-  const checkUserQuery = `select * from user where username = '${userName}';`;
+  const { username, password } = request.body;
+  const checkUserQuery = `select * from user where username = '${username}';`;
   const result = await db.get(checkUserQuery);
   if (result === undefined) {
     response.status(400);
